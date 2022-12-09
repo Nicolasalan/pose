@@ -3,7 +3,6 @@
 import os.path as osp
 import numpy as np
 import argparse
-import set_paths
 from dataset_loaders.env import Env
 
 from torchvision import transforms

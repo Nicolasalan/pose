@@ -2,7 +2,6 @@
 
 import numpy as np
 import os.path as osp
-import set_paths
 import os, cv2, sys, rospy, tf2_ros, argparse, configparser, torch.cuda, tf, math
 import geometry_msgs.msg
 from visdom import Visdom

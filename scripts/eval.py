@@ -7,7 +7,6 @@ import numpy as np
 import os.path as osp
 import configparser
 import torch.cuda
-import set_paths
 import matplotlib.pyplot as plt
 
 from models.posenet import PoseNet, MapNet
