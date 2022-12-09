@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import numpy as np
 import os.path as osp
 import set_paths
@@ -67,9 +68,9 @@ class PoseEstimator:
             loc_func = lambda storage, loc: storage
             checkpoint = torch.load(weights_filename, map_location=loc_func)
             load_state_dict(self.eval_net, checkpoint['model_state_dict'])
-            print 'Loaded weights from {:s}'.format(weights_filename)
+            print('Loaded weights from {:s}'.format(weights_filename))
         else:
-            print 'Could not load weights from {:s}'.format(weights_filename)
+            print('Could not load weights from {:s}'.format(weights_filename))
             sys.exit(-1)
 
     def load_stats(self):
@@ -192,8 +193,8 @@ class Poses:
                 pred_pose = self.tmp_pose[min_index]
 
                 self.publisher(pred_pose)
-                print 'x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
-                    .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6])
+                print('x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
+                    .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6]))
                 if args.plot:
                     self.plot(pred_pose, slam_pose)
                 self.dis = []
@@ -204,8 +205,8 @@ class Poses:
             self.tmp_pose = np.vstack((self.tmp_pose, pred_pose))
         else:
             self.publisher(pred_pose)
-            print'x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
-                .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6])
+            print('x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
+                .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6]))
             if args.plot:
                 self.plot(pred_pose, slam_pose)
 

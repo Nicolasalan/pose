@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import argparse
@@ -57,9 +59,9 @@ if osp.isfile(weights_filename):
     loc_func = lambda storage, loc: storage
     checkpoint = torch.load(weights_filename, map_location=loc_func)
     load_state_dict(model, checkpoint['model_state_dict'])
-    print 'Loaded weights from {:s}'.format(weights_filename)
+    print('Loaded weights from {:s}'.format(weights_filename))
 else:
-    print 'Could not load weights from {:s}'.format(weights_filename)
+    print('Could not load weights from {:s}'.format(weights_filename))
     sys.exit(-1)
 
 data_dir = osp.join('..', 'data', args.dataset)
@@ -80,9 +82,9 @@ pose_m, pose_s  = np.loadtxt(pose_stats_file)  # max value
 # dataset
 train = not args.val
 if train:
-    print 'Running {:s} on Training Dataset'.format(args.model)
+    print('Running {:s} on Training Dataset'.format(args.model))
 else:
-    print 'Running {:s} on Validation Dataset'.format(args.model)
+    print('Running {:s} on Validation Dataset'.format(args.model))
 
 data_dir = osp.join('..', 'data', 'deepslam_data', args.dataset)
 kwargs = dict(dataset=args.dataset, scene=args.scene, data_path=data_dir, train=train, transform=data_transform, target_transform=target_transform, reduce=args.reduce, seed=seed)
@@ -112,7 +114,7 @@ targ_poses = np.zeros((L, 7))  # store all target poses
 # inference loop
 for batch_idx, (data, target) in enumerate(loader):
     if batch_idx % 200 == 0:
-        print 'Image {:d} / {:d}'.format(batch_idx, len(loader))
+        print('Image {:d} / {:d}'.format(batch_idx, len(loader)))
 
     idx = [batch_idx]
     idx = idx[len(idx) / 2]
@@ -143,8 +145,8 @@ for batch_idx, (data, target) in enumerate(loader):
 t_loss = np.asarray([t_criterion(p, t) for p, t in zip(pred_poses[:, :3], targ_poses[:, :3])])
 q_loss = np.asarray([q_criterion(p, t) for p, t in zip(pred_poses[:, 3:], targ_poses[:, 3:])])
 
-print 'Error in translation: median {:3.2f} m,  mean {:3.2f} m\nError in rotation: median {:3.2f} degrees, mean {:3.2f} degree'.\
-    format(np.median(t_loss), np.mean(t_loss), np.median(q_loss), np.mean(q_loss))
+print('Error in translation: median {:3.2f} m,  mean {:3.2f} m\nError in rotation: median {:3.2f} degrees, mean {:3.2f} degree'.\
+    format(np.median(t_loss), np.mean(t_loss), np.median(q_loss), np.mean(q_loss)))
 
 # create figure object
 fig = plt.figure(figsize=(8,8))

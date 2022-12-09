@@ -1,6 +1,5 @@
-"""
-pytorch data loader for the dataset
-"""
+#!/usr/bin/env python3
+
 import os
 import os.path as osp
 import numpy as np

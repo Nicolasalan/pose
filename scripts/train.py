@@ -1,6 +1,5 @@
-"""
-Main training script for MapNet
-"""
+#!/usr/bin/env python3
+
 import json
 import torch
 import argparse
@@ -89,7 +88,7 @@ stats = np.loadtxt(stats_file)
 tforms = [transforms.Resize(256)]
 if color_jitter > 0:
   assert color_jitter <= 1.0
-  print 'Using ColorJitter data augmentation'
+  print('Using ColorJitter data augmentation')
   tforms.append(transforms.ColorJitter(brightness=color_jitter, contrast=color_jitter, saturation=color_jitter, hue=0.5))
 tforms.append(transforms.ToTensor())
 tforms.append(transforms.Normalize(mean=stats[0], std=np.sqrt(stats[1])))

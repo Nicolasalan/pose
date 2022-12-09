@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import os.path as osp
 import argparse
@@ -21,7 +23,7 @@ ps = {}
 for seq in seqs:
     seq_dir = osp.join(data_dir, 'seq-{:02d}'.format(seq))
     p_filenames = [n for n in os.listdir(osp.join(seq_dir, '.')) if n.find('pose') >= 0]
-    frame_idx = np.array(xrange(len(p_filenames)), dtype=np.int)
+    frame_idx = np.array(range(len(p_filenames)), dtype=np.int)
     pss = [np.loadtxt(osp.join(seq_dir, 'frame-{:06d}.pose.txt'.format(i))).flatten()[:7] for i in frame_idx]
     ps[seq] = np.asarray(pss)
 
@@ -39,14 +41,14 @@ plt.subplots_adjust(left=0, bottom=0, right=1, top=1)
 x = gt_poses[::1, 0].T
 y = gt_poses[::1, 1].T
 
-print 'Plotting Ground truth...'
+print('Plotting Ground truth...')
 # 2D drawing
 ax.scatter(x[:], y[:], s=5, c='g')
 
 ax.set_ylabel('Y')
 ax.set_xlabel('X')
-print 'Done!'
-print 'Close windows to exit...'
+print('Done!')
+print('Close windows to exit...')
 plt.show(block=True)
 
 

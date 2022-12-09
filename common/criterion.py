@@ -1,12 +1,4 @@
-"""
-Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
-Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
-"""
- 
-"""
-This module implements the various loss functions (a.k.a. criterions) used
-in the paper
-"""
+#!/usr/bin/env python3
 
 from common import pose_utils
 import torch

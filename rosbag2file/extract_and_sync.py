@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import rosbag, argparse, cv2, os, time
 import numpy as np
 from tqdm import tqdm
@@ -47,7 +49,7 @@ if __name__ == '__main__':
         fp.writelines(lines)
         fp.close()
     else:
-        print 'Enter wrong mode! Please enter (train or val)'
+        print('Enter wrong mode! Please enter (train or val)')
 
     generator = tqdm(enumerate(bag.read_messages(topics=[args.topic])), total=img_count)
     drop_frame = 0
@@ -89,4 +91,4 @@ if __name__ == '__main__':
         transform_filepath = os.path.join(data_dir, transform_filepath)
         np.savetxt(transform_filepath, (transforms[idx][1:].reshape((1, -1))))
     bag.close()
-    print 'Totally drop {:03d} frame'.format(drop_frame)
+    print('Totally drop {:03d} frame'.format(drop_frame))

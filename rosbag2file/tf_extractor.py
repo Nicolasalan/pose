@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import rospy, tf2_ros, argparse
 import numpy as np
 remove_first_slash = lambda s: s if s[0] != '/' else s[1:]
@@ -35,12 +37,12 @@ class TFExtractor:
       counter += 1
 
       if self.verbose and counter % 100 == 0:
-        print '{}: {}'.format(counter, ','.join(map(str, sample)))
+        print('{}: {}'.format(counter, ','.join(map(str, sample))))
       rate.sleep()
 
   def save(self):
     np.save(self.filename, np.array(self.transforms))
-    print 'Finished!'
+    print('Finished!')
 
 
 if __name__ == '__main__':

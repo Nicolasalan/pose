@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import numpy as np
 import os.path as osp
 import set_paths
@@ -62,9 +63,9 @@ class PoseEstimator:
             loc_func = lambda storage, loc: storage
             checkpoint = torch.load(weights_filename, map_location=loc_func)
             load_state_dict(self.eval_net, checkpoint['model_state_dict'])
-            print 'Loaded weights from {:s}'.format(weights_filename)
+            print('Loaded weights from {:s}'.format(weights_filename))
         else:
-            print 'Could not load weights from {:s}'.format(weights_filename)
+            print('Could not load weights from {:s}'.format(weights_filename))
             sys.exit(-1)
 
     def load_stats(self):
@@ -163,8 +164,8 @@ class Poses:
             self.noise_filter(pred_pose)
         else:
             self.publisher(pred_pose)
-            print'x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
-                .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6])
+            print('x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
+                .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6]))
 
     def publisher(self, pred_pose):
         br = tf2_ros.TransformBroadcaster()
@@ -209,7 +210,7 @@ class Poses:
             self.unusual_displacement_threshold += 0.02
             self.unusual_angle_threshold += 0.05
             if self.unusual % 5 ==0:
-                print 'Continuous unusual {:02d} times: '.format(self.unusual)
+                print('Continuous unusual {:02d} times: '.format(self.unusual))
             pred_pose = self.tmp_pose[0]
 
         else:
@@ -217,8 +218,8 @@ class Poses:
             self.reset_para()
 
         self.publisher(pred_pose)
-        print'x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
-            .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6])
+        print('x = {:.2f} | y = {:.2f} | z = {:.2f} | w = {:.2f} | p = {:.2f} | q = {:.2f} | r = {:.2f}' \
+            .format(pred_pose[0], pred_pose[1], pred_pose[2], pred_pose[3], pred_pose[4], pred_pose[5], pred_pose[6]))
 
     def reset_para(self):
         self.unusual = 0

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import os.path as osp
 import argparse
@@ -33,14 +35,14 @@ plt.subplots_adjust(left=0, bottom=0, right=1, top=1)
 x = gt_poses[::1, 0].T
 y = gt_poses[::1, 1].T
 
-print 'Plotting Ground truth...'
+print('Plotting Ground truth...')
 # 2D drawing
 ax.scatter(x[:], y[:], s=5, c='g')
 
 ax.set_ylabel('Y')
 ax.set_xlabel('X')
-print 'Done!'
-print 'Close windows to exit...'
+print('Done!')
+print('Close windows to exit...')
 plt.show(block=True)
 
 

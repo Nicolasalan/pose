@@ -1,7 +1,4 @@
-"""
-Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
-Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
-"""
+#!/usr/bin/env python3
  
 import torch
 from torch.nn import Module
@@ -469,7 +466,7 @@ class PoseGraph:
     J = np.zeros((0, 6*self.N))  # 6 because updates for rotation are on manifold
 
     # unary constraints
-    for i in xrange(self.N):
+    for i in range(self.N):
       # translation constraint
       jt = np.zeros((3, J.shape[1]))
       jt[:, 6*i : 6*i+3] = np.eye(3)
@@ -481,7 +478,7 @@ class PoseGraph:
       J = np.vstack((J, np.dot(L_aq, jr)))
 
     # pairwise constraints
-    for i in xrange(self.N-1):
+    for i in range(self.N-1):
         # translation constraint
         jt = np.zeros((3, J.shape[1]))
         dt = dqstq_t(q=self.z[7*i+3 : 7*i+7])
@@ -523,12 +520,12 @@ class PoseGraph:
     L = np.zeros((7, 7))
     L[:3, :3] = L_ax
     L[3:, 3:] = L_aq
-    for i in xrange(self.N):
+    for i in range(self.N):
       rr = self.z[7*i : 7*(i+1)] - np.reshape(poses[i], (-1, 1))
       r = np.vstack((r, np.dot(L, rr)))
 
     # pairwise residuals
-    for i in xrange(self.N-1):
+    for i in range(self.N-1):
         # translation residual
         v = self.z[7*(i+1):7*(i+1)+3, 0]-self.z[7*i:7*i+3, 0]
         q = txq.qinverse(self.z[7*i+3:7*i+7, 0])
@@ -553,7 +550,7 @@ class PoseGraph:
     :param x: manifold increment, column vector
     :return:
     """
-    for i in xrange(self.N):
+    for i in range(self.N):
       # update translation
       t = x[6*i : 6*i+3]
       self.z[7*i : 7*i+3] += t
@@ -594,7 +591,7 @@ class PoseGraph:
     L_rx = np.linalg.cholesky(np.eye(3) / srx)
     L_rq = np.linalg.cholesky(np.eye(4) / srq)
 
-    for n_iter in xrange(n_iters):
+    for n_iter in range(n_iters):
       J = self.jacobian(L_ax.T, L_aq.T, L_rx.T, L_rq.T)
       r = self.residuals(poses.copy(), vos.copy(), L_ax.T, L_aq.T, L_rx.T,
                          L_rq.T)
@@ -637,8 +634,8 @@ class PoseGraphFC:
       J = np.vstack((J, np.dot(L_aq, jr)))
 
     # pairwise constraints
-    for i in xrange(self.N):
-      for j in xrange(i+1, self.N):
+    for i in range(self.N):
+      for j in range(i+1, self.N):
         # translation constraint
         jt = np.zeros((3, J.shape[1]))
         dt = dqstq_t(q=self.z[7*i+3 : 7*i+7])
@@ -680,14 +677,14 @@ class PoseGraphFC:
     L = np.zeros((7, 7))
     L[:3, :3] = L_ax
     L[3:, 3:] = L_aq
-    for i in xrange(self.N):
+    for i in range(self.N):
       rr = self.z[7*i : 7*(i+1)] - np.reshape(poses[i], (-1, 1))
       r = np.vstack((r, np.dot(L, rr)))
 
     # pairwise residuals
     k = 0
-    for i in xrange(self.N):
-      for j in xrange(i+1, self.N):
+    for i in range(self.N):
+      for j in range(i+1, self.N):
         # translation residual
         v = self.z[7*j:7*j+3, 0]-self.z[7*i:7*i+3, 0]
         q = txq.qinverse(self.z[7*i+3:7*i+7, 0])
@@ -713,7 +710,7 @@ class PoseGraphFC:
     :param x: manifold increment, column vector
     :return: 
     """
-    for i in xrange(self.N):
+    for i in range(self.N):
       # update translation
       t = x[6*i : 6*i+3]
       self.z[7*i : 7*i+3] += t
@@ -754,7 +751,7 @@ class PoseGraphFC:
     L_rx = np.linalg.cholesky(np.eye(3) / srx)
     L_rq = np.linalg.cholesky(np.eye(4) / srq)
 
-    for n_iter in xrange(n_iters):
+    for n_iter in range(n_iters):
       J = self.jacobian(L_ax.T, L_aq.T, L_rx.T, L_rq.T)
       r = self.residuals(poses.copy(), vos.copy(), L_ax.T, L_aq.T, L_rx.T,
                          L_rq.T)
@@ -791,13 +788,13 @@ def optimize_poses(pred_poses, vos=None, fc_vos=False, target_poses=None,
     if target_poses is not None:
       # calculate the VOs (in the pred_poses frame)
       vos = np.zeros((len(target_poses)-1, 7))
-      for i in xrange(len(vos)):
+      for i in range(len(vos)):
         vos[i, :3] = target_poses[i+1, :3] - target_poses[i, :3]
         q0 = target_poses[i, 3:]
         q1 = target_poses[i+1, 3:]
         vos[i, 3:] = txq.qmult(txq.qinverse(q0), q1)
     else:
-      print 'Specify either VO or target poses'
+      print('Specify either VO or target poses')
       return None
   optim_poses = pgo.optimize(poses=pred_poses, vos=vos, sax=sax, saq=saq,
                              srx=srx, srq=srq)
@@ -1086,9 +1083,9 @@ def test_align_3d_pts():
 
   Re,te,se = align_3d_pts(x1,x2)
 
-  print 'scale ', s, se
-  print 'rotation matrx ', R, Re
-  print 'translation ', t, te
+  print('scale ', s, se)
+  print('rotation matrx ', R, Re)
+  print('translation ', t, te)
 
 def test_align_camera_poses():
     import transforms3d.euler as txe
@@ -1115,9 +1112,9 @@ def test_align_camera_poses():
     Re1,te1,se1 = align_camera_poses(o1,o2,R1,R2,False)
     Re2,te2,se2 = align_camera_poses(o1,o2,R1,R2,True)
 
-    print 'scale ', s, se1, se2
-    print 'rotation matrx ', R, Re1, Re2
-    print 'translation ', t, te1, te2
+    print('scale ', s, se1, se2)
+    print('rotation matrx ', R, Re1, Re2)
+    print('translation ', t, te1, te2)
 
 def pgo_test_poses():
   """
@@ -1125,7 +1122,7 @@ def pgo_test_poses():
   :return:
   """
   poses = np.zeros((3, 7))
-  for i in xrange(poses.shape[0]):
+  for i in range(poses.shape[0]):
     poses[i, :3] = i
     angle = math.radians(10*i)
     R = txe.euler2mat(angle, angle, angle)
@@ -1133,7 +1130,7 @@ def pgo_test_poses():
     poses[i, 3:] = q
 
   vos = np.zeros((poses.shape[0]-1, 7))
-  for i in xrange(vos.shape[0]):
+  for i in range(vos.shape[0]):
     vos[i, 0] = 1.5
     vos[i, 1] = 0.5
     vos[i, 2] = 1.0
@@ -1148,7 +1145,7 @@ def pgo_test_poses1():
   R = txe.euler2mat(0, 0, np.deg2rad(45))
   q = txq.mat2quat(R)
   poses[:, 3:] = q
-  for i in xrange(len(poses)):
+  for i in range(len(poses)):
     poses[i, :3] = np.asarray([i, i, 0])
 
   pt = np.zeros((len(poses), 6))
@@ -1169,12 +1166,12 @@ def pgo_test_poses1():
   return poses, vos
 
 def print_poses(poses):
-  print 'translations'
-  print poses[:, :3]
-  print 'euler'
-  for i in xrange(poses.shape[0]):
+  print('translations')
+  print(poses[:, :3])
+  print('euler')
+  for i in range(poses.shape[0]):
     a = txe.mat2euler(txq.quat2mat(poses[i, 3:]))
-    print [np.rad2deg(aa) for aa in a]
+    print([np.rad2deg(aa) for aa in a])
 
 def test_pgo():
   """
@@ -1182,15 +1179,15 @@ def test_pgo():
   :return: bool
   """
   pred_poses, vos = pgo_test_poses1()
-  print 'pred poses'
+  print('pred poses')
   print_poses(pred_poses)
-  print 'vos'
+  print('vos')
   print_poses(vos)
 
   pgo = PoseGraph()
   optimized_poses = pgo.optimize(pred_poses, vos)
 
-  print 'optimized'
+  print('optimized')
   print_poses(optimized_poses)
 
 
@@ -1205,7 +1202,7 @@ def test_pose_utils():
   ra = lambda _: np.random.uniform(0, 2*math.pi)
 
   if TEST_COMPOSE:
-    print 'Testing pose composing...'
+    print('Testing pose composing...')
     R1 = txe.euler2mat(ra(1), ra(1), ra(1))
     t1 = np.random.rand(3)
     R2 = txe.euler2mat(ra(1), ra(1), ra(1))
@@ -1214,10 +1211,10 @@ def test_pose_utils():
     # homogeneous matrix method
     R = np.dot(R1, R2)
     t = t1 + np.dot(R1, t2)
-    print 'From homogeneous matrices, t = '
-    print t
-    print 'R = '
-    print R
+    print('From homogeneous matrices, t = ')
+    print(t)
+    print('R = ')
+    print(R)
 
     # quaternion method
     q1 = txq.mat2quat(R1)
@@ -1228,13 +1225,13 @@ def test_pose_utils():
     p  = compose_pose_quaternion(torch.unsqueeze(p1, 0), torch.unsqueeze(p2, 0))
     t  = p[:, :3].numpy().squeeze()
     q  = p[:, 3:].numpy().squeeze()
-    print 'From quaternions, t = '
-    print t
-    print 'R = '
-    print txe.quat2mat(q)
+    print('From quaternions, t = ')
+    print(t)
+    print('R = ')
+    print(txe.quat2mat(q))
 
   if TEST_INV:
-    print 'Testing pose inversion...'
+    print('Testing pose inversion...')
     R = txe.euler2mat(ra(1), ra(1), ra(1))
     t = np.random.rand(3)
     T = np.eye(4)
@@ -1249,8 +1246,8 @@ def test_pose_utils():
     Tinv = np.eye(4)
     Tinv[:3, :3] = Rinv
     Tinv[:3, -1] = tinv.numpy().squeeze()
-    print 'T * T^(-1) = '
-    print np.dot(T, Tinv)
+    print('T * T^(-1) = ')
+    print(np.dot(T, Tinv))
 
 def test_q_error():
   ra = lambda _: np.random.uniform(0, 2*math.pi)
@@ -1261,8 +1258,8 @@ def test_q_error():
   q2 = txq.mat2quat(txe.euler2mat(a2, 0, 0))
   a1 = np.rad2deg(a1)
   a2 = np.rad2deg(a2)
-  print 'Angles: {:f}, {:f}, difference = {:f}'.format(a1, a2, a1-a2)
-  print 'Error: {:f}'.format(quaternion_angular_error(q1, q2))
+  print('Angles: {:f}, {:f}, difference = {:f}'.format(a1, a2, a1-a2))
+  print('Error: {:f}'.format(quaternion_angular_error(q1, q2)))
 
 def test_log_q_error():
   ra = lambda _: np.random.uniform(0, 2*math.pi)
@@ -1276,8 +1273,8 @@ def test_log_q_error():
   q2 = np.arccos(q2[0]) * q2[1:] / np.linalg.norm(q2[1:])
   a1 = np.rad2deg(a1)
   a2 = np.rad2deg(a2)
-  print 'Angles: {:f}, {:f}, difference = {:f}'.format(a1, a2, a1-a2)
-  print 'Error: {:f}'.format(log_quaternion_angular_error(q1, q2))
+  print('Angles: {:f}, {:f}, difference = {:f}'.format(a1, a2, a1-a2))
+  print('Error: {:f}'.format(log_quaternion_angular_error(q1, q2)))
 
 if __name__ == '__main__':
   test_pgo()

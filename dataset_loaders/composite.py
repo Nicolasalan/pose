@@ -1,6 +1,5 @@
-"""
-Composite data-loaders derived from class specific data loaders
-"""
+#!/usr/bin/env python3
+
 import torch
 import numpy as np
 from torch.utils import data
