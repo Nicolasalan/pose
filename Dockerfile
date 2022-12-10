@@ -46,6 +46,36 @@ RUN apt-get install -q -y --no-install-recommends \
 # Install dependencies
 RUN apt-get update && apt-get install -y ros-noetic-ros-controllers \
   && apt-get install -y ros-noetic-cv-bridge \
-  && apt-get install -y ros-noetic-vision-opencv \
+  && apt-get install -y ros-noetic-python-opencv \
   && apt-get install -y ros-geometry-msgs \
-    && apt-get install -y ros-noetic-ros-control \
+  && apt-get install -y ros-noetic-ros-control 
+
+# create a catkin workspace
+RUN mkdir -p /ws/src \
+ && cd /ws/src \
+ && source /opt/ros/noetic/setup.bash \
+ && catkin_init_workspace \
+ && git clone -b main https://github.com/Nicolasalan/pose.git
+
+# Copy the source files
+WORKDIR /ws
+
+# Build the Catkin workspace
+RUN cd /ws \
+ && source /opt/ros/noetic/setup.bash \
+ && rosdep install -y --from-paths src --ignore-src \
+ && catkin build
+
+# Setup bashrc
+RUN echo "source /ws/devel/setup.bash" >> ~/.bashrc 
+
+# Remove display warnings
+RUN mkdir /tmp/runtime-root
+ENV XDG_RUNTIME_DIR "/tmp/runtime-root"
+ENV NO_AT_BRIDGE 1
+
+# Install python dependencies
+RUN cd /ws/src/pose && pip3 install -r requirements.txt
+
+# entrypoint script
+ENTRYPOINT [ "/src/pose/entrypoint.sh" ]
