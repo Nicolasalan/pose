@@ -9,7 +9,7 @@ from geometry_msgs.msg import PoseStamped
 from cv_bridge import CvBridge
 from PIL import Image as PIL_Image
 from torchvision import transforms, models
-from models.posenet import PoseNet, MapNet
+from utils.posenet import PoseNet, MapNet
 from utils.train import load_state_dict, step_feedfwd
 from utils.pose_utils import qexp
 
