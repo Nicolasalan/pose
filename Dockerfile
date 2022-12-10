@@ -90,7 +90,7 @@ EXPOSE 8888
 RUN jupyter labextension install @jupyterlab/debugger
 
 # Add Jupyter Notebook config
-ADD ./jupyter_lab_config.py /root/.jupyter/
+ADD ./trained/jupyter_lab_config.py /root/.jupyter/
 
 WORKDIR /notebooks
 
