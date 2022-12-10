@@ -7,7 +7,7 @@ from dataset_loaders.env import Env
 
 from torchvision import transforms
 from torch.utils.data import DataLoader
-from common.train import safe_collate
+from utils.train import safe_collate
 
 parser = argparse.ArgumentParser(description='Dataset images statistics')
 parser.add_argument('--dataset', type=str, help='Dataset', required=True)

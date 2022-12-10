@@ -1,7 +1,4 @@
-"""
-Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
-Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
-"""
+#!/usr/bin/env python3
  
 import sys
 import os
@@ -9,9 +6,8 @@ import os.path as osp
 import time
 import configparser
 import numpy as np
-from visdom import Visdom
 
-from common import Logger
+from utils import Logger
 
 import torch
 import torch.utils.data
@@ -37,8 +33,8 @@ def load_state_dict(model, state_dict):
     state_prefix = state_names[0].replace(model_names[0], '')
     model_prefix = None
   else:
-    print 'Could not find the correct prefixes between {:s} and {:s}'.\
-      format(model_names[0], state_names[0])
+    print('Could not find the correct prefixes between {:s} and {:s}'.\
+      format(model_names[0], state_names[0]))
     raise KeyError
 
   from collections import OrderedDict
@@ -110,48 +106,24 @@ class Trainer(object):
     self.config['max_grad_norm'] = section.getfloat('max_grad_norm', 0)
 
     section = settings['logging']
-    self.config['log_visdom'] = section.getboolean('visdom')
     self.config['print_freq'] = section.getint('print_freq')
 
     self.logdir = osp.join(os.getcwd(), 'logs', self.experiment)
     if not osp.isdir(self.logdir):
       os.makedirs(self.logdir)
 
-    if self.config['log_visdom']:
-      # start plots
-      self.vis_env = experiment
-      self.loss_win = 'loss_win'
-      self.vis = Visdom()
-      self.vis.line(X=np.zeros((1,2)), Y=np.zeros((1,2)), win=self.loss_win,
-        opts={'legend': ['train_loss', 'val_loss'], 'xlabel': 'epochs',
-              'ylabel': 'loss'}, env=self.vis_env)
-      self.lr_win = 'lr_win'
-      self.vis.line(X=np.zeros(1), Y=np.zeros(1), win=self.lr_win,
-        opts={'legend': ['learning_rate'], 'xlabel': 'epochs',
-              'ylabel': 'log(lr)'}, env=self.vis_env)
-      criterion_params = {k: v.data.cpu().numpy()[0] for k, v in
-                          self.train_criterion.named_parameters()}
-      self.n_criterion_params = len(criterion_params)
-      if self.n_criterion_params:
-        self.criterion_param_win = 'cparam_win'
-        self.vis.line(X=np.zeros((1, self.n_criterion_params)),
-                      Y=np.asarray(criterion_params.values())[np.newaxis, :],
-                      win=self.criterion_param_win, env=self.vis_env,
-                      opts={'legend': criterion_params.keys(),
-                            'xlabel': 'epochs', 'ylabel': 'value'})
-
     logfile = osp.join(self.logdir, 'log.txt')
     stdout = Logger.Logger(logfile)
-    print 'Logging to {:s}'.format(logfile)
+    print('Logging to {:s}'.format(logfile))
     sys.stdout = stdout
 
     # log all the command line options
-    print '---------------------------------------'
-    print 'Experiment: {:s}'.format(self.experiment)
+    print('---------------------------------------')
+    print('Experiment: {:s}'.format(self.experiment))
     for k, v in self.config.items():
-      print '{:s}: {:s}'.format(k, str(v))
-    print 'Using GPU {:s} / {:d}'.format(device, torch.cuda.device_count())
-    print '---------------------------------------'
+      print('{:s}: {:s}'.format(k, str(v)))
+    print('Using GPU {:s} / {:d}'.format(device, torch.cuda.device_count()))
+    print('---------------------------------------')
 
     # set random seed
     torch.manual_seed(self.config['seed'])
@@ -174,8 +146,8 @@ class Trainer(object):
                            if not k in c_state}
             c_state.update(append_dict)
             self.train_criterion.load_state_dict(c_state)
-        print 'Loaded checkpoint {:s} epoch {:d}'.format(checkpoint_file,
-          checkpoint['epoch'])
+        print('Loaded checkpoint {:s} epoch {:d}'.format(checkpoint_file,
+          checkpoint['epoch']))
 
     self.train_loader = torch.utils.data.DataLoader(train_dataset,
       batch_size=self.config['batch_size'], shuffle=self.config['shuffle'],
@@ -204,7 +176,7 @@ class Trainer(object):
     torch.save(checkpoint_dict, filename)
 
   def train_val(self):
-    for epoch in xrange(self.start_epoch, self.config['n_epochs']):
+    for epoch in range(self.start_epoch, self.config['n_epochs']):
       # VALIDATION
       if self.config['do_val'] and ((epoch % self.config['val_freq'] == 0) or
                                       (epoch == self.config['n_epochs']-1)) :
@@ -225,39 +197,29 @@ class Trainer(object):
           val_batch_time.update(time.time() - end)
 
           if batch_idx % self.config['print_freq'] == 0:
-            print 'Val {:s}: Epoch {:d}\t' \
+            print('Val {:s}: Epoch {:d}\t' \
                   'Batch {:d}/{:d}\t' \
                   'Data time {:.4f} ({:.4f})\t' \
                   'Batch time {:.4f} ({:.4f})\t' \
                   'Loss {:f}' \
               .format(self.experiment, epoch, batch_idx, len(self.val_loader)-1,
               val_data_time.val, val_data_time.avg, val_batch_time.val,
-              val_batch_time.avg, loss)
-            if self.config['log_visdom']:
-              self.vis.save(envs=[self.vis_env])
+              val_batch_time.avg, loss))
 
           end = time.time()
 
-        print 'Val {:s}: Epoch {:d}, val_loss {:f}'.format(self.experiment,
-          epoch, val_loss.avg)
+        print('Val {:s}: Epoch {:d}, val_loss {:f}'.format(self.experiment,
+          epoch, val_loss.avg))
 
-        if self.config['log_visdom']:
-          self.vis.updateTrace(X=np.asarray([epoch]),
-            Y=np.asarray([val_loss.avg]), win=self.loss_win, name='val_loss',
-            append=True, env=self.vis_env)
-          self.vis.save(envs=[self.vis_env])
 
       # SAVE CHECKPOINT
       if epoch % self.config['snapshot'] == 0:
         self.save_checkpoint(epoch)
-        print 'Epoch {:d} checkpoint saved for {:s}'.\
-          format(epoch, self.experiment)
+        print('Epoch {:d} checkpoint saved for {:s}'.\
+          format(epoch, self.experiment))
 
       # ADJUST LR
       lr = self.optimizer.adjust_lr(epoch)
-      if self.config['log_visdom']:
-        self.vis.updateTrace(X=np.asarray([epoch]), Y=np.asarray([np.log10(lr)]),
-          win=self.lr_win, name='learning_rate', append=True, env=self.vis_env)
 
       # TRAIN
       self.model.train()
@@ -278,7 +240,7 @@ class Trainer(object):
         if batch_idx % self.config['print_freq'] == 0:
           n_iter = epoch*len(self.train_loader) + batch_idx
           epoch_count = float(n_iter)/len(self.train_loader)
-          print 'Train {:s}: Epoch {:d}\t' \
+          print('Train {:s}: Epoch {:d}\t' \
                 'Batch {:d}/{:d}\t' \
                 'Data Time {:.4f} ({:.4f})\t' \
                 'Batch Time {:.4f} ({:.4f})\t' \
@@ -286,27 +248,13 @@ class Trainer(object):
                 'lr: {:f}'.\
             format(self.experiment, epoch, batch_idx, len(self.train_loader)-1,
             train_data_time.val, train_data_time.avg, train_batch_time.val,
-            train_batch_time.avg, loss, lr)
-          if self.config['log_visdom']:
-            self.vis.updateTrace(X=np.asarray([epoch_count]),
-              Y=np.asarray([loss]), win=self.loss_win, name='train_loss',
-              append=True, env=self.vis_env)
-            if self.n_criterion_params:
-              for name, v in self.train_criterion.named_parameters():
-                v = v.data.cpu().numpy()[0]
-                self.vis.updateTrace(X=np.asarray([epoch_count]), Y=np.asarray([v]),
-                                     win=self.criterion_param_win, name=name,
-                                     append=True, env=self.vis_env)
-            self.vis.save(envs=[self.vis_env])
-
+            train_batch_time.avg, loss, lr))
         end = time.time()
 
     # Save final checkpoint
     epoch = self.config['n_epochs']
     self.save_checkpoint(epoch)
-    print 'Epoch {:d} checkpoint saved'.format(epoch)
-    if self.config['log_visdom']:
-      self.vis.save(envs=[self.vis_env])
+    print('Epoch {:d} checkpoint saved'.format(epoch))
 
 def step_feedfwd(data, model, cuda, target=None, criterion=None, optim=None,
     train=True, max_grad_norm=0.0):
@@ -327,13 +275,13 @@ def step_feedfwd(data, model, cuda, target=None, criterion=None, optim=None,
 
   data_var = Variable(data, requires_grad=train)
   if cuda:
-    data_var = data_var.cuda(async=True)
+    data_var = data_var.cuda()
   with torch.set_grad_enabled(train):
     output = model(data_var)
 
   if criterion is not None:
     if cuda:
-      target = target.cuda(async=True)
+      target = target.cuda()
 
     target_var = Variable(target, requires_grad=False)
     with torch.set_grad_enabled(train):

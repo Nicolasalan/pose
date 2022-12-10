@@ -4,7 +4,6 @@ import numpy as np
 import os.path as osp
 import os, cv2, sys, rospy, tf2_ros, argparse, configparser, torch.cuda, tf, math
 import geometry_msgs.msg
-from visdom import Visdom
 from scipy import stats
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PoseStamped
@@ -12,8 +11,8 @@ from cv_bridge import CvBridge
 from PIL import Image as PIL_Image
 from torchvision import transforms, models
 from models.posenet import PoseNet, MapNet
-from common.train import load_state_dict, step_feedfwd
-from common.pose_utils import qexp
+from utils.train import load_state_dict, step_feedfwd
+from utils.pose_utils import qexp
 
 
 class PoseEstimator:
@@ -149,8 +148,6 @@ class PoseEstimator:
 class Poses:
     def __init__(self, args):
         rospy.init_node("pose_estimate_node")
-        if args.plot:
-            self.vis = Visdom()
 
         if args.opt:
             self.tmp_pose = np.empty((0, 7))
@@ -262,7 +259,6 @@ if __name__ == '__main__':
     parser.add_argument('--weights', type=str, default='logs/Env_Lab_mapnet_mapnet_learn_beta_learn_gamma/epoch_300.pth.tar', help='trained weights to load')
     parser.add_argument('--model', type=str, default='mapnet', help='Model to use')
     parser.add_argument('--config_file', type=str, default='configs/mapnet.ini', help='configuration file')
-    parser.add_argument('--plot', action='store_true', help='Plot on visdom')
     parser.add_argument('--ground_truth', action='store_true', help='With Ground Truth from SLAM')
     parser.add_argument('--opt', action='store_true', help='Optimize')
     args = parser.parse_args()

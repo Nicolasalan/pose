@@ -3,16 +3,15 @@
 import json
 import torch
 import argparse
-import set_paths
 import numpy as np
 import os.path as osp
 import configparser
 
 from torch import nn
 from torchvision import transforms, models
-from common.train import Trainer
-from common.optimizer import Optimizer
-from common.criterion import PoseNetCriterion, MapNetCriterion, MapNetOnlineCriterion
+from utils.train import Trainer
+from utils.optimizer import Optimizer
+from utils.criterion import PoseNetCriterion, MapNetCriterion, MapNetOnlineCriterion
 from models.posenet import PoseNet, MapNet
 from dataset_loaders.composite import MF
 from dataset_loaders.env import Env

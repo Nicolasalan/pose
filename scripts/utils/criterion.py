@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from common import pose_utils
+from utils import pose_utils
 import torch
 from torch import nn
 

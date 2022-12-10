@@ -38,7 +38,7 @@ class Env(data.Dataset):
         for seq in seqs:
             seq_dir = osp.join(base_dir, 'seq-{:02d}'.format(seq))
             p_filenames = [n for n in os.listdir(osp.join(seq_dir, '.')) if n.find('pose') >= 0]
-            frame_idx = np.array(xrange(len(p_filenames)), dtype=np.int)
+            frame_idx = np.array(range(len(p_filenames)), dtype=np.int)
 
             if self.reduce is None:
                 pss = [np.loadtxt(osp.join(seq_dir, 'frame-{:06d}.pose.txt'.format(i))).flatten()[:7] for i in frame_idx]
@@ -93,7 +93,7 @@ class Env(data.Dataset):
     def process(self, poses_in, mean_t, std_t):
         poses_out = np.zeros((len(poses_in), 6))
         poses_out[:, 0:3] = poses_in[:, [0, 1, 2]]
-        for i in xrange(len(poses_out)):
+        for i in range(len(poses_out)):
             q = poses_in[i, [3, 4, 5, 6]]
             q *= np.sign(q[0])  # constrain to hemisphere
             q = self.qlog(q)

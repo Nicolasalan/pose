@@ -10,8 +10,8 @@ from cv_bridge import CvBridge
 from PIL import Image as PIL_Image
 from torchvision import transforms, models
 from models.posenet import PoseNet, MapNet
-from common.train import load_state_dict, step_feedfwd
-from common.pose_utils import qexp
+from utils.train import load_state_dict, step_feedfwd
+from utils.pose_utils import qexp
 
 
 class PoseEstimator:

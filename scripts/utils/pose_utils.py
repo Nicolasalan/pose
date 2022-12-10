@@ -236,7 +236,7 @@ def calc_vos_simple(poses):
   """
   vos = []
   for p in poses:
-    pvos = [p[i+1].unsqueeze(0) - p[i].unsqueeze(0) for i in xrange(len(p)-1)]
+    pvos = [p[i+1].unsqueeze(0) - p[i].unsqueeze(0) for i in range(len(p)-1)]
     vos.append(torch.cat(pvos, dim=0))
   vos = torch.stack(vos, dim=0)
 
@@ -251,7 +251,7 @@ def calc_vos(poses):
   vos = []
   for p in poses:
     pvos = [calc_vo_logq(p[i].unsqueeze(0), p[i+1].unsqueeze(0))
-            for i in xrange(len(p)-1)]
+            for i in range(len(p)-1)]
     vos.append(torch.cat(pvos, dim=0))
   vos = torch.stack(vos, dim=0)
   return vos
@@ -265,7 +265,7 @@ def calc_vos_relative(poses):
   vos = []
   for p in poses:
     pvos = [calc_vo_relative_logq(p[i].unsqueeze(0), p[i+1].unsqueeze(0))
-            for i in xrange(len(p)-1)]
+            for i in range(len(p)-1)]
     vos.append(torch.cat(pvos, dim=0))
   vos = torch.stack(vos, dim=0)
   return vos
@@ -279,7 +279,7 @@ def calc_vos_safe(poses):
   vos = []
   for p in poses:
     pvos = [calc_vo_logq_safe(p[i].unsqueeze(0), p[i+1].unsqueeze(0))
-            for i in xrange(len(p)-1)]
+            for i in range(len(p)-1)]
     vos.append(torch.cat(pvos, dim=0))
   vos = torch.stack(vos, dim=0)
   return vos
@@ -293,8 +293,8 @@ def calc_vos_safe_fc(poses):
   vos = []
   for p in poses:
     pvos = []
-    for i in xrange(p.size(0)):
-      for j in xrange(i+1, p.size(0)):
+    for i in range(p.size(0)):
+      for j in range(i+1, p.size(0)):
         pvos.append(calc_vo_logq_safe(p[i].unsqueeze(0), p[j].unsqueeze(0)))
     vos.append(torch.cat(pvos, dim=0))
   vos = torch.stack(vos, dim=0)
@@ -338,7 +338,7 @@ def process_poses(poses_in, mean_t, std_t, align_R, align_t, align_s):
   poses_out[:, 0:3] = poses_in[:, [3, 7, 11]]
 
   # align
-  for i in xrange(len(poses_out)):
+  for i in range(len(poses_out)):
     R = poses_in[i].reshape((3, 4))[:3, :3]
     q = txq.mat2quat(np.dot(align_R, R))
     q *= np.sign(q[0])  # constrain to hemisphere
@@ -622,7 +622,7 @@ class PoseGraphFC:
     J = np.zeros((0, 6*self.N))  # 6 because updates for rotation are on manifold
 
     # unary constraints
-    for i in xrange(self.N):
+    for i in range(self.N):
       # translation constraint
       jt = np.zeros((3, J.shape[1]))
       jt[:, 6*i : 6*i+3] = np.eye(3)
