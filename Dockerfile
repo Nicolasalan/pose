@@ -40,19 +40,12 @@ RUN apt-get install -q -y --no-install-recommends \
   python3-rosdistro \
   python3-rospkg \
   wget \
-  curl
+  curl \
+  Pillow
 
 # Install dependencies
 RUN apt-get update && apt-get install -y ros-noetic-ros-controllers \
- && apt-get install -y ros-noetic-joint-state-controller \
- && apt-get install -y ros-noetic-joint-state-publisher \
- && apt-get install -y ros-noetic-robot-state-publisher \
- && apt-get install -y ros-noetic-robot-state-controller \
- && apt-get install -y ros-noetic-xacro \ 
- && apt-get install -y ros-noetic-smach-ros \
- && apt-get install -y ros-noetic-teleop-twist-keyboard \
- && apt-get install -y ros-noetic-gazebo-ros \
- && apt-get install -y ros-noetic-gazebo-ros-control \
- && apt-get install -y ros-noetic-rplidar-ros \
- && apt-get install -y ros-noetic-driver-base \
- && apt-get install -y ros-noetic-rosserial-arduino
+  && apt-get install -y ros-noetic-cv-bridge \
+  && apt-get install -y ros-noetic-vision-opencv \
+  && apt-get install -y ros-geometry-msgs \
+    && apt-get install -y ros-noetic-ros-control \
