@@ -1,3 +1,3 @@
 from_frame_id: map
 to_frame_id: base_footprint
-image_topic: /kinect2/qhd/image_color_rect
+image_topic: /usb_cam/image_raw
